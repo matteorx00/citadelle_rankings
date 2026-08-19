@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Citadelles Rankings</title>
+<meta name="theme-color" content="#1E2A44">
+
+<!-- Installation en application -->
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Citadelles">
+<meta name="description" content="Classement des parties de Citadelles entre amis.">
+<link rel="apple-touch-icon" href="icons/b/apple-touch-icon.png">
+<link rel="icon" href="icons/b/icon-192.png" type="image/png">
+<style>
+/* =========================================================
+   CITADELLES RANKINGS — feuille de style
+   Charte reprise des captures fournies
+   bleu nuit, doré laiton, fond gris clair, cartes blanches
+   ========================================================= */
+
+:root{
+  --navy:#1E2A44;
+  --navy-2:#2A3757;
+  --navy-3:#38466A;
+  --gold:#C0A062;
+  --gold-soft:#D8C08E;
+  --gold-dark:#A9884B;
+
+  --bg:#EFEFF0;
+  --surface:#FFFFFF;
+  --surface-2:#F7F7F8;
+  --border:#E2E2E5;
+  --text:#1E2A44;
+  --text-2:#4C566B;
+  --muted:#8A8A93;
+
+  --pos:#3F7D62;
+  --neg:#B0503F;
+
+  --sidebar-bg:var(--navy);
+  --sidebar-text:#C9CEDA;
+  --sidebar-active-bg:#2A3757;
+
+  --radius:10px;
+  --radius-sm:6px;
+  --shadow:0 1px 2px rgba(30,42,68,.06), 0 4px 16px rgba(30,42,68,.05);
+  --shadow-lg:0 12px 40px rgba(30,42,68,.18);
+  --font:"Aptos","Aptos Display","Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+
+html[data-theme="dark"]{
+  --bg:#12182580;
+  --bg:#121825;
+  --surface:#1B2334;
+  --surface-2:#212B3F;
+  --border:#2C3648;
+  --text:#E9EBF0;
+  --text-2:#B4BCCC;
+  --muted:#8790A3;
+  --navy:#0E1420;
+  --sidebar-bg:#0E1420;
+  --sidebar-text:#AAB3C4;
+  --sidebar-active-bg:#1D2740;
+  --pos:#5FA383;
+  --neg:#D3705C;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+/* ---------- utilitaires ---------- */
+.eyebrow{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--muted);
+}
+.hidden{display:none !important}
+.pos{color:var(--pos)}
+.neg{color:var(--neg)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- logo ---------- */
+.logo{display:block;height:auto}
+.logo-dark{
+  --logo-tower-side:#A9884B;--logo-tower-main:#D8C08E;
+  --logo-base:#C0A062;--logo-text:#FFFFFF;--logo-sub:#C0A062;
+}
+.gate-logo{width:230px;margin:0 auto 42px}
+.sidebar-logo{width:152px;margin-top:2px}
+
+/* ---------- écran d'accès ---------- */
+#gate{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy);
+  padding:calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+}
+.gate-card{width:100%;max-width:380px;text-align:center;color:#fff}
+.gate-label{
+  display:block;text-align:left;font-size:11px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:#9AA4B8;margin-bottom:8px;
+}
+#gateInput{
+  width:100%;padding:13px 14px;border-radius:var(--radius-sm);
+  border:1px solid #3A4763;background:#26314C;color:#fff;
+}
+#gateInput::placeholder{color:#6E7A94}
+#gateError{color:#E8A08F;font-size:13px;margin-top:12px;min-height:18px;text-align:left}
+.gate-note{color:#7B87A0;font-size:12px;margin-top:28px}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;border-radius:var(--radius-sm);font-weight:600;font-size:14px;
+  transition:background .15s,border-color .15s,color .15s,transform .05s;
+}
+.btn:active{transform:translateY(1px)}
+.btn-gold{background:var(--gold);color:#1E2A44}
+.btn-gold:hover{background:var(--gold-dark);color:#fff}
+.btn-navy{background:var(--navy);color:#fff}
+html[data-theme="dark"] .btn-navy{background:var(--surface-2);color:var(--text)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text)}
+.btn-danger{background:transparent;color:var(--neg);border:1px solid var(--neg)}
+.btn-danger:hover{background:var(--neg);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-sm{padding:7px 12px;font-size:13px}
+.btn-block{width:100%}
+
+/* ---------- structure ---------- */
+#app{display:flex;min-height:100%}
+
+.sidebar{
+  width:244px;flex:0 0 244px;background:var(--sidebar-bg);
+  display:flex;flex-direction:column;padding:20px 0;
+  position:sticky;top:0;height:100vh;
+}
+.sidebar-head{display:flex;align-items:flex-start;gap:10px;padding:0 18px 26px}
+.icon-btn{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  display:inline-flex;align-items:center;justify-content:center;
+  color:#9AA4B8;flex:0 0 32px;
+}
+.icon-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.icon-btn svg{width:17px;height:17px}
+
+.nav-label{padding:0 18px 10px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;width:100%;
+  padding:11px 18px;color:var(--sidebar-text);font-size:14px;font-weight:500;
+  border-left:3px solid transparent;text-align:left;
+}
+.nav-item svg{width:17px;height:17px;flex:0 0 17px;opacity:.75}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-item[aria-selected="true"]{
+  color:#fff;background:var(--sidebar-active-bg);border-left-color:var(--gold);
+}
+.nav-item[aria-selected="true"] svg{opacity:1}
+.sidebar-foot{margin-top:auto;padding:0 18px}
+.sidebar-foot .nav-item{padding-left:0;border-left:none}
+
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 30px;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:20;
+}
+.topbar .icon-btn{color:var(--muted)}
+.topbar .icon-btn:hover{background:var(--surface-2);color:var(--text)}
+.view-title{font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.topbar-spacer{flex:1}
+.admin-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 10px;
+  border-radius:99px;background:var(--gold);color:#1E2A44;
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+}
+
+.view{padding:30px;max-width:920px;width:100%;margin:0 auto;flex:1}
+.view-head{margin-bottom:22px}
+.view-head h2{font-size:27px;font-weight:700;letter-spacing:-.02em;margin:6px 0 4px}
+.view-head p{color:var(--muted);font-size:14px;margin:0}
+
+/* ---------- cartes ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+}
+.banner{
+  background:var(--navy);color:#fff;border-radius:var(--radius);
+  padding:18px 20px;display:flex;align-items:center;gap:16px;margin-bottom:22px;
+}
+.banner-icon{
+  width:42px;height:42px;flex:0 0 42px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;
+}
+.banner-icon svg{width:20px;height:20px;color:var(--gold)}
+.banner-body{flex:1;min-width:0}
+.banner-title{font-weight:600;font-size:15px}
+.banner-text{font-size:13px;color:#A9B3C6;margin-top:2px}
+.banner-text b{color:var(--gold);font-weight:600}
+
+/* ---------- liste des parties ---------- */
+.game-list{display:flex;flex-direction:column;gap:10px}
+.game-card{
+  width:100%;text-align:left;display:flex;align-items:center;gap:16px;
+  padding:15px 18px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow);transition:border-color .15s,transform .05s;
+}
+.game-card:hover{border-color:var(--gold)}
+.game-card:active{transform:translateY(1px)}
+.game-date{flex:1;min-width:0}
+.game-date strong{display:block;font-size:15px;font-weight:600}
+.game-date span{font-size:12.5px;color:var(--muted)}
+.game-winner{
+  display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.crown{color:var(--gold);width:15px;height:15px;flex:0 0 15px}
+.chip{
+  font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 9px;border-radius:99px;background:var(--surface-2);
+  color:var(--muted);border:1px solid var(--border);white-space:nowrap;
+}
+.chip-live{background:var(--gold);color:#1E2A44;border-color:var(--gold)}
+
+.empty{
+  border:1px dashed var(--border);border-radius:var(--radius);
+  padding:52px 24px;text-align:center;color:var(--muted);background:var(--surface);
+}
+.empty strong{display:block;color:var(--text);font-size:15px;margin-bottom:6px}
+
+/* ---------- classement ---------- */
+.table{width:100%;border-collapse:collapse}
+.table thead th{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-align:left;padding:12px 16px;
+  border-bottom:1px solid var(--border);background:var(--surface-2);
+}
+.table thead th.r,.table td.r{text-align:right}
+.table tbody tr{border-bottom:1px solid var(--border);cursor:pointer}
+.table tbody tr:last-child{border-bottom:none}
+.table tbody tr:hover{background:var(--surface-2)}
+.table td{padding:13px 16px;font-size:14.5px}
+.rank-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;font-size:12.5px;font-weight:700;
+  background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);
+}
+.rank-1{background:var(--gold);color:#1E2A44;border-color:var(--gold)}
+.rank-2,.rank-3{background:var(--navy);color:#fff;border-color:var(--navy)}
+html[data-theme="dark"] .rank-2,html[data-theme="dark"] .rank-3{background:var(--navy-3);border-color:var(--navy-3)}
+.unranked-note{padding:14px 16px;font-size:13px;color:var(--muted);border-top:1px solid var(--border)}
+
+/* ---------- modales ---------- */
+.modal{
+  position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(20,28,46,.55);backdrop-filter:blur(2px);
+}
+.modal[hidden]{display:none}
+.modal-box{
+  background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-lg);
+  width:100%;max-width:520px;max-height:calc(100vh - 40px);
+  display:flex;flex-direction:column;animation:pop .16s ease-out;
+}
+.modal-box.wide{max-width:640px}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.modal-box{animation:none}}
+.modal-head{
+  display:flex;align-items:flex-start;gap:12px;padding:20px 22px 16px;
+  border-bottom:1px solid var(--border);
+}
+.modal-head h3{margin:4px 0 0;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.modal-head .eyebrow{display:block}
+.modal-head-body{flex:1;min-width:0}
+.modal-body{padding:22px;overflow-y:auto}
+.modal-foot{
+  display:flex;gap:10px;justify-content:flex-end;padding:16px 22px;
+  border-top:1px solid var(--border);background:var(--surface-2);
+  border-radius:0 0 var(--radius) var(--radius);flex-wrap:wrap;
+}
+.modal-foot .left{margin-right:auto}
+.close-btn{
+  width:30px;height:30px;border-radius:var(--radius-sm);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;flex:0 0 30px;
+}
+.close-btn:hover{background:var(--surface-2);color:var(--text)}
+.close-btn svg{width:16px;height:16px}
+
+/* ---------- formulaires ---------- */
+.field{margin-bottom:18px}
+.field > label{
+  display:block;font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+}
+.input{
+  width:100%;padding:11px 13px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface);color:var(--text);
+}
+.input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(192,160,98,.18)}
+.input::placeholder{color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+.segmented{display:flex;gap:8px;flex-wrap:wrap}
+.seg{
+  flex:1;min-width:52px;padding:12px 0;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface);
+  font-weight:600;color:var(--text-2);text-align:center;
+}
+.seg:hover{border-color:var(--gold)}
+.seg[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+html[data-theme="dark"] .seg[aria-pressed="true"]{background:var(--gold);color:#1E2A44;border-color:var(--gold)}
+
+.player-rows{display:flex;flex-direction:column;gap:10px}
+.player-row{display:flex;align-items:center;gap:10px}
+.player-row .idx{
+  width:24px;flex:0 0 24px;text-align:center;font-size:12px;font-weight:700;color:var(--muted);
+}
+.ac{position:relative;flex:1;min-width:0}
+.ac-list{
+  position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:5;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  box-shadow:var(--shadow-lg);max-height:190px;overflow-y:auto;
+}
+.ac-list[hidden]{display:none}
+.ac-opt{display:block;width:100%;text-align:left;padding:10px 13px;font-size:14px}
+.ac-opt:hover,.ac-opt.active{background:var(--surface-2)}
+.ac-opt .new{color:var(--gold);font-weight:600}
+
+/* ---------- saisie des scores ---------- */
+.score-row{
+  display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--border);
+}
+.score-row:last-of-type{border-bottom:none}
+.score-name{flex:1;min-width:0;font-weight:500;overflow:hidden;text-overflow:ellipsis}
+.score-input{width:88px;flex:0 0 88px;text-align:right}
+.score-pts{width:62px;flex:0 0 62px;text-align:right;font-weight:700;font-size:14px}
+
+.preview{
+  margin-top:20px;padding:16px;border-radius:var(--radius);
+  background:var(--surface-2);border:1px solid var(--border);
+}
+.preview-row{
+  display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;
+}
+.preview-row .p-rank{width:26px;flex:0 0 26px;color:var(--muted);font-weight:700;font-size:12.5px}
+.preview-row .p-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preview-row .p-score{color:var(--muted);font-size:13px}
+.preview-row .p-pts{width:56px;flex:0 0 56px;text-align:right;font-weight:700}
+
+/* ---------- tirage du premier joueur ---------- */
+.draw{text-align:center;padding:20px 0 8px}
+.draw-name{
+  font-size:32px;font-weight:700;letter-spacing:-.02em;margin:14px 0 6px;
+  color:var(--text);min-height:42px;
+}
+.draw.rolling .draw-name{color:var(--muted)}
+.crown-big{width:40px;height:40px;color:var(--gold)}
+
+/* ---------- détail partie / joueur ---------- */
+.detail-row{
+  display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);
+}
+.detail-row:last-child{border-bottom:none}
+.d-rank{width:26px;flex:0 0 26px}
+.d-name{flex:1;min-width:0}
+.d-name b{font-weight:600}
+.d-name small{display:block;color:var(--muted);font-size:12px}
+.d-score{text-align:right;font-size:13px;color:var(--text-2)}
+.d-pts{width:60px;flex:0 0 60px;text-align:right;font-weight:700}
+
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px}
+.stat{
+  padding:14px 16px;border-radius:var(--radius);
+  background:var(--surface-2);border:1px solid var(--border);
+}
+.stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.stat .k{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* ---------- réglages / admin ---------- */
+.list-row{
+  display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);
+}
+.list-row:last-child{border-bottom:none}
+.list-row .grow{flex:1;min-width:0}
+.list-row small{display:block;color:var(--muted);font-size:12px}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0}
+
+/* ---------- bouton flottant ---------- */
+.fab{
+  position:fixed;right:26px;bottom:26px;z-index:30;
+  display:inline-flex;align-items:center;gap:9px;padding:14px 20px;
+  border-radius:99px;background:var(--gold);color:#1E2A44;font-weight:700;font-size:14.5px;
+  box-shadow:0 8px 24px rgba(30,42,68,.24);transition:background .15s,transform .05s;
+}
+.fab:hover{background:var(--gold-dark);color:#fff}
+.fab:active{transform:translateY(1px)}
+.fab svg{width:17px;height:17px}
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed;left:50%;bottom:96px;transform:translateX(-50%);
+  background:var(--navy);color:#fff;padding:12px 18px;border-radius:var(--radius-sm);
+  font-size:14px;box-shadow:var(--shadow-lg);z-index:200;max-width:88vw;text-align:center;
+}
+#toast[hidden]{display:none}
+
+/* ---------- barre d'onglets mobile ---------- */
+.tabbar{display:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:899px){
+  #app{display:block;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  .sidebar{display:none}
+  .topbar{
+    padding:calc(12px + env(safe-area-inset-top)) 14px 12px;
+    background:var(--navy);border-bottom:none;
+  }
+  .topbar .view-title{color:#fff}
+  .topbar .icon-btn{color:#9AA4B8}
+  .topbar .icon-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+  .view{padding:18px 14px 24px}
+  .view-head h2{font-size:23px}
+  .tabbar{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:var(--surface);border-top:1px solid var(--border);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 10px;
+    font-size:11px;font-weight:600;color:var(--muted);border-top:2px solid transparent;
+  }
+  .tab svg{width:19px;height:19px}
+  .tab[aria-selected="true"]{color:var(--text);border-top-color:var(--gold)}
+  .fab{right:14px;bottom:calc(78px + env(safe-area-inset-bottom));padding:13px 18px}
+  .modal{padding:0;align-items:flex-end}
+  .modal-box{
+    max-width:none;border-radius:var(--radius) var(--radius) 0 0;
+    max-height:92vh;padding-bottom:env(safe-area-inset-bottom);
+  }
+  .modal-foot{border-radius:0}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  #toast{bottom:150px}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute"><symbol id="logo-cr" viewBox="0 0 289 190"><!-- Marque : podium de tours crénelées -->
+  <g transform="translate(117.9,6) scale(0.72)">
+    <g fill="var(--logo-tower-side,#A9884B)">
+      <rect x="0" y="38" width="22" height="48"/><rect x="0" y="30" width="6" height="8"/><rect x="8" y="30" width="6" height="8"/><rect x="16" y="30" width="6" height="8"/>
+    </g>
+    <g fill="var(--logo-tower-main,#1E2A44)">
+      <rect x="26" y="20" width="22" height="66"/><rect x="26" y="12" width="6" height="8"/><rect x="34" y="12" width="6" height="8"/><rect x="42" y="12" width="6" height="8"/>
+    </g>
+    <g fill="var(--logo-tower-side,#A9884B)">
+      <rect x="52" y="54" width="22" height="32"/><rect x="52" y="46" width="6" height="8"/><rect x="60" y="46" width="6" height="8"/><rect x="68" y="46" width="6" height="8"/>
+    </g>
+    <rect x="-4" y="86" width="82" height="7" rx="2.5" fill="var(--logo-base,#C0A062)"/>
+  </g>
+  <!-- CITADELLES, lettres vectorisées, aucune dépendance à une police -->
+  <g transform="translate(10.15,140)" fill="var(--logo-text,#1E2A44)"><path transform="translate(0.00,0) scale(0.02148,-0.02148)" d="M787.00 -20.00Q586.00 -20.00 426.50 69.00Q267.00 158.00 174.50 328.50Q82.00 499.00 82.00 744.00Q82.00 990.00 175.50 1161.00Q269.00 1332.00 429.00 1421.00Q589.00 1510.00 787.00 1510.00Q964.00 1510.00 1105.00 1446.00Q1246.00 1382.00 1335.00 1260.00Q1424.00 1138.00 1445.00 964.00H1088.00Q1071.00 1073.00 993.50 1136.50Q916.00 1200.00 796.00 1200.00Q632.00 1200.00 537.50 1080.50Q443.00 961.00 443.00 744.00Q443.00 520.00 538.00 405.00Q633.00 290.00 794.00 290.00Q914.00 290.00 992.00 353.50Q1070.00 417.00 1089.00 526.00H1446.00Q1436.00 426.00 1388.50 329.00Q1341.00 232.00 1258.00 153.00Q1175.00 74.00 1057.00 27.00Q939.00 -20.00 787.00 -20.00Z"/><path transform="translate(32.22,0) scale(0.02148,-0.02148)" d="M469.00 1490.00V0.00H116.00V1490.00Z"/><path transform="translate(44.29,0) scale(0.02148,-0.02148)" d="M66.00 1202.00V1490.00H1320.00V1202.00H869.00V0.00H517.00V1202.00Z"/><path transform="translate(73.57,0) scale(0.02148,-0.02148)" d="M47.00 0.00 544.00 1490.00H1017.00L1529.00 0.00H1133.00L1032.00 317.00H536.00L439.00 0.00ZM619.00 587.00H946.00L926.00 651.00Q887.00 779.00 850.00 919.00Q813.00 1059.00 777.00 1209.00Q743.00 1058.00 709.50 918.00Q676.00 778.00 639.00 651.00Z"/><path transform="translate(106.93,0) scale(0.02148,-0.02148)" d="M664.00 0.00H116.00V1490.00H664.00Q891.00 1490.00 1055.00 1400.50Q1219.00 1311.00 1308.00 1144.00Q1397.00 977.00 1397.00 745.00Q1397.00 512.00 1308.00 345.50Q1219.00 179.00 1055.00 89.50Q891.00 0.00 664.00 0.00ZM469.00 302.00H649.00Q841.00 302.00 942.50 402.50Q1044.00 503.00 1044.00 745.00Q1044.00 987.00 942.00 1087.50Q840.00 1188.00 644.00 1188.00H469.00Z"/><path transform="translate(138.22,0) scale(0.02148,-0.02148)" d="M116.00 0.00V1490.00H1150.00V1202.00H469.00V894.00H1096.00V612.00H469.00V288.00H1149.00V0.00Z"/><path transform="translate(164.56,0) scale(0.02148,-0.02148)" d="M116.00 0.00V1490.00H469.00V288.00H1092.00V0.00Z"/><path transform="translate(188.94,0) scale(0.02148,-0.02148)" d="M116.00 0.00V1490.00H469.00V288.00H1092.00V0.00Z"/><path transform="translate(213.31,0) scale(0.02148,-0.02148)" d="M116.00 0.00V1490.00H1150.00V1202.00H469.00V894.00H1096.00V612.00H469.00V288.00H1149.00V0.00Z"/><path transform="translate(239.65,0) scale(0.02148,-0.02148)" d="M691.00 -20.00Q411.00 -20.00 243.50 107.00Q76.00 234.00 72.00 492.00H411.00Q417.00 383.00 491.50 328.00Q566.00 273.00 687.00 273.00Q797.00 273.00 860.00 317.50Q923.00 362.00 923.00 433.00Q923.00 497.00 863.50 534.50Q804.00 572.00 682.00 600.00L524.00 637.00Q331.00 681.00 221.00 781.00Q111.00 881.00 111.00 1049.00Q111.00 1187.00 185.50 1290.50Q260.00 1394.00 391.00 1452.00Q522.00 1510.00 691.00 1510.00Q864.00 1510.00 991.00 1451.50Q1118.00 1393.00 1188.00 1288.50Q1258.00 1184.00 1260.00 1046.00H921.00Q914.00 1127.00 855.00 1172.00Q796.00 1217.00 690.00 1217.00Q584.00 1217.00 530.00 1176.00Q476.00 1135.00 476.00 1073.00Q476.00 1004.00 536.00 966.50Q596.00 929.00 696.00 907.00L825.00 877.00Q1041.00 829.00 1160.50 720.00Q1280.00 611.00 1280.00 432.00Q1280.00 220.00 1124.00 100.00Q968.00 -20.00 691.00 -20.00Z"/></g>
+  <!-- RANKINGS -->
+  <g transform="translate(10.15,170)" fill="var(--logo-sub,#A9884B)"><path transform="translate(0.00,0) scale(0.00830,-0.00830)" d="M150.00 0.00V1490.00H707.00Q964.00 1490.00 1098.00 1358.00Q1232.00 1226.00 1232.00 1013.00Q1232.00 862.00 1164.00 753.00Q1096.00 644.00 964.00 592.00L1287.00 0.00H988.00L695.00 547.00H417.00V0.00ZM417.00 768.00H668.00Q819.00 768.00 889.00 831.50Q959.00 895.00 959.00 1013.00Q959.00 1133.00 889.00 1199.50Q819.00 1266.00 666.00 1266.00H417.00Z"/><path transform="translate(36.66,0) scale(0.00830,-0.00830)" d="M50.00 0.00 570.00 1490.00H909.00L1441.00 0.00H1148.00L1021.00 369.00H464.00L342.00 0.00ZM535.00 584.00H948.00L883.00 774.00Q850.00 877.00 814.50 1002.00Q779.00 1127.00 737.00 1282.00Q697.00 1126.00 663.00 999.50Q629.00 873.00 598.00 774.00Z"/><path transform="translate(74.59,0) scale(0.00830,-0.00830)" d="M150.00 0.00V1490.00H452.00L967.00 669.00Q1007.00 605.00 1054.00 519.50Q1101.00 434.00 1150.00 322.00Q1142.00 430.00 1138.00 535.00Q1134.00 640.00 1134.00 708.00V1490.00H1405.00V0.00H1102.00L637.00 739.00Q598.00 801.00 563.50 862.00Q529.00 923.00 491.00 995.00Q453.00 1067.00 403.00 1164.00Q410.00 1026.00 416.00 914.00Q422.00 802.00 422.00 740.00V0.00Z"/><path transform="translate(113.07,0) scale(0.00830,-0.00830)" d="M150.00 0.00V1490.00H417.00V1048.00L413.00 729.00Q465.00 809.00 523.00 884.00Q581.00 959.00 654.00 1044.00L1045.00 1490.00H1377.00L805.00 845.00L1387.00 0.00H1072.00L620.00 668.00L417.00 447.00V0.00Z"/><path transform="translate(150.59,0) scale(0.00830,-0.00830)" d="M417.00 1490.00V0.00H150.00V1490.00Z"/><path transform="translate(180.86,0) scale(0.00830,-0.00830)" d="M150.00 0.00V1490.00H452.00L967.00 669.00Q1007.00 605.00 1054.00 519.50Q1101.00 434.00 1150.00 322.00Q1142.00 430.00 1138.00 535.00Q1134.00 640.00 1134.00 708.00V1490.00H1405.00V0.00H1102.00L637.00 739.00Q598.00 801.00 563.50 862.00Q529.00 923.00 491.00 995.00Q453.00 1067.00 403.00 1164.00Q410.00 1026.00 416.00 914.00Q422.00 802.00 422.00 740.00V0.00Z"/><path transform="translate(219.34,0) scale(0.00830,-0.00830)" d="M793.00 -20.00Q587.00 -20.00 432.00 72.50Q277.00 165.00 190.00 336.50Q103.00 508.00 103.00 743.00Q103.00 983.00 192.50 1154.50Q282.00 1326.00 436.00 1418.00Q590.00 1510.00 785.00 1510.00Q949.00 1510.00 1082.50 1447.00Q1216.00 1384.00 1302.50 1272.00Q1389.00 1160.00 1412.00 1014.00H1139.00Q1103.00 1133.00 1013.50 1202.00Q924.00 1271.00 788.00 1271.00Q668.00 1271.00 573.50 1210.00Q479.00 1149.00 425.00 1031.50Q371.00 914.00 371.00 745.00Q371.00 492.00 488.50 355.50Q606.00 219.00 794.00 219.00Q962.00 219.00 1062.00 313.50Q1162.00 408.00 1166.00 569.00H822.00V779.00H1425.00V600.00Q1425.00 409.00 1343.50 269.50Q1262.00 130.00 1119.50 55.00Q977.00 -20.00 793.00 -20.00Z"/><path transform="translate(257.64,0) scale(0.00830,-0.00830)" d="M673.00 -23.00Q413.00 -23.00 258.50 97.00Q104.00 217.00 95.00 438.00H358.00Q367.00 320.00 456.00 262.50Q545.00 205.00 671.00 205.00Q803.00 205.00 886.50 264.50Q970.00 324.00 970.00 420.00Q970.00 507.00 896.00 551.50Q822.00 596.00 701.00 627.00L532.00 671.00Q345.00 719.00 240.50 816.00Q136.00 913.00 136.00 1071.00Q136.00 1203.00 207.00 1301.50Q278.00 1400.00 401.00 1455.00Q524.00 1510.00 680.00 1510.00Q839.00 1510.00 958.50 1455.00Q1078.00 1400.00 1146.00 1303.00Q1214.00 1206.00 1217.00 1082.00H958.00Q948.00 1177.00 872.50 1230.00Q797.00 1283.00 676.00 1283.00Q550.00 1283.00 478.00 1227.50Q406.00 1172.00 406.00 1087.00Q406.00 1024.00 444.50 984.50Q483.00 945.00 541.50 921.00Q600.00 897.00 660.00 882.00L799.00 846.00Q909.00 819.00 1009.50 768.50Q1110.00 718.00 1173.50 633.00Q1237.00 548.00 1237.00 418.00Q1237.00 287.00 1170.00 187.50Q1103.00 88.00 977.00 32.50Q851.00 -23.00 673.00 -23.00Z"/></g></symbol></svg>
+
+<!-- =========================================================
+     ÉCRAN D'ACCÈS (une seule fois par appareil)
+     ========================================================= -->
+<div id="gate">
+  <div class="gate-card">
+    <svg class="logo logo-dark gate-logo" viewBox="0 0 289 190" role="img" aria-label="Citadelles Rankings"><use href="#logo-cr"/></svg>
+    <label class="gate-label" for="gateInput">Mot de passe d'accès</label>
+    <input id="gateInput" class="input" type="password" autocomplete="off" placeholder="Saisir le mot de passe">
+    <p id="gateError" role="alert"></p>
+    <button id="gateBtn" class="btn btn-gold btn-block" style="margin-top:6px">Entrer</button>
+    <p class="gate-note">Le mot de passe n'est demandé qu'une fois sur cet appareil.</p>
+  </div>
+</div>
+
+<!-- =========================================================
+     APPLICATION
+     ========================================================= -->
+<div id="app" hidden>
+
+  <!-- Barre latérale (desktop) -->
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <button class="icon-btn" id="btnSettingsDesktop" title="Paramètres" aria-label="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <svg class="logo logo-dark sidebar-logo" viewBox="0 0 289 190" role="img" aria-label="Citadelles Rankings"><use href="#logo-cr"/></svg>
+    </div>
+
+    <div class="nav-label eyebrow" style="color:#6B7893">Navigation</div>
+    <button class="nav-item" data-view="parties" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg>
+      Parties
+    </button>
+    <button class="nav-item" data-view="stats" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-6"/></svg>
+      Statistiques
+    </button>
+
+    <div class="sidebar-foot">
+      <button class="nav-item" id="btnThemeDesktop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span id="themeLabelDesktop">Mode sombre</span>
+      </button>
+    </div>
+  </aside>
+
+  <main>
+    <!-- Barre supérieure -->
+    <header class="topbar">
+      <button class="icon-btn" id="btnSettingsMobile" title="Paramètres" aria-label="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <h1 class="view-title" id="viewTitle">Parties</h1>
+      <div class="topbar-spacer"></div>
+      <span class="admin-pill hidden" id="adminPill">Admin</span>
+      <button class="icon-btn" id="btnThemeMobile" title="Changer de thème" aria-label="Changer de thème">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </header>
+
+    <!-- Onglet Parties -->
+    <section class="view" id="view-parties">
+      <div class="view-head">
+        <span class="eyebrow">Historique</span>
+        <h2>Parties</h2>
+        <p>Chaque partie enregistrée alimente le classement général.</p>
+      </div>
+      <div id="liveGames"></div>
+      <div class="game-list" id="gamesList"></div>
+    </section>
+
+    <!-- Onglet Statistiques -->
+    <section class="view hidden" id="view-stats">
+      <div class="view-head">
+        <span class="eyebrow">Classement général</span>
+        <h2>Statistiques</h2>
+        <p>Cumul des points attribués sur l'ensemble des parties.</p>
+      </div>
+      <div id="statsContent"></div>
+    </section>
+  </main>
+
+  <!-- Onglets mobile -->
+  <nav class="tabbar">
+    <button class="tab" data-view="parties" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg>
+      Parties
+    </button>
+    <button class="tab" data-view="stats" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-6"/></svg>
+      Statistiques
+    </button>
+  </nav>
+
+  <!-- Bouton nouvelle partie -->
+  <button class="fab" id="btnNewGame">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Nouvelle partie
+  </button>
+</div>
+
+<!-- =========================================================
+     MODALES
+     ========================================================= -->
+
+<!-- Nouvelle partie -->
+<div class="modal" id="modalNew" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-body">
+        <span class="eyebrow" id="newStepLabel">Étape 1 sur 3</span>
+        <h3 id="newTitle">Nouvelle partie</h3>
+      </div>
+      <button class="close-btn" data-close="modalNew" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="newBody"></div>
+    <div class="modal-foot" id="newFoot"></div>
+  </div>
+</div>
+
+<!-- Détail d'une partie -->
+<div class="modal" id="modalGame" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-body">
+        <span class="eyebrow" id="gameEyebrow">Partie</span>
+        <h3 id="gameTitle"></h3>
+      </div>
+      <button class="close-btn" data-close="modalGame" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="gameBody"></div>
+    <div class="modal-foot" id="gameFoot"></div>
+  </div>
+</div>
+
+<!-- Fiche joueur -->
+<div class="modal" id="modalPlayer" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-body">
+        <span class="eyebrow">Fiche joueur</span>
+        <h3 id="playerTitle"></h3>
+      </div>
+      <button class="close-btn" data-close="modalPlayer" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="playerBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close="modalPlayer">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Paramètres et administration -->
+<div class="modal" id="modalSettings" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-body">
+        <span class="eyebrow">Réglages</span>
+        <h3 id="settingsTitle">Paramètres</h3>
+      </div>
+      <button class="close-btn" data-close="modalSettings" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="settingsBody"></div>
+    <div class="modal-foot" id="settingsFoot"></div>
+  </div>
+</div>
+
+<!-- Modale générique (gestion des joueurs, archives, édition) -->
+<div class="modal" id="modalAux" hidden>
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <div class="modal-head-body">
+        <span class="eyebrow" id="auxEyebrow">Administration</span>
+        <h3 id="auxTitle"></h3>
+      </div>
+      <button class="close-btn" data-close="modalAux" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="auxBody"></div>
+    <div class="modal-foot" id="auxFoot"></div>
+  </div>
+</div>
+
+<div id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

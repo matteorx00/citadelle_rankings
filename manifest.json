@@ -1,0 +1,20 @@
+{
+  "name": "Citadelles Rankings",
+  "short_name": "Citadelles",
+  "description": "Classement des parties de Citadelles entre amis.",
+  "id": "/citadelle_rankings/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#1E2A44",
+  "theme_color": "#1E2A44",
+  "lang": "fr",
+  "categories": ["games", "utilities"],
+  "icons": [
+    { "src": "icons/b/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/b/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/b/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
